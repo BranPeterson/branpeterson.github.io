@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>World Cup Hub — Live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <div class="eyebrow">Now playing</div>
+      <h1 class="page" id="heroTitle">The tournament, tracked live.</h1>
+      <p class="lede">Every group, every goal, every formation. Live scores, deep player profiles in a Football Manager style, tactical boards and links straight to the highlights.</p>
+      <div class="hero-meta" id="heroMeta"></div>
+      <div style="display:flex;gap:10px;margin-top:24px;flex-wrap:wrap">
+        <a class="btn primary" href="schedule.html">View full schedule</a>
+        <a class="btn" href="players.html">Player profiles</a>
+      </div>
+    </div>
+    <div class="hero-art">
+      <div class="panel" style="padding:18px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="dotlive" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);font-weight:700">Live & next</span></div>
+        <div id="heroMatches" class="grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-head" style="margin-top:30px"><h2>Score ticker</h2><span class="hint">Scroll →</span></div>
+  <div class="ticker" id="ticker"></div>
+
+  <div class="section-head"><h2 id="todayHead">Latest</h2><span class="hint">All times ET</span></div>
+  <div class="grid cols-3" id="today"></div>
+
+  <div class="section-head"><h2>Latest results</h2><a class="hint" href="schedule.html" style="color:var(--accent)">All 104 matches ↗</a></div>
+  <div class="grid cols-3" id="recent"></div>
+</main>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+
+<script src="assets/live.js"></script> 
+<script>
+  mountNav("index.html");
+  mountFoot();
+
+  // pick the most recent date that has any finished or live match
+  function latestActiveDate() {
+    const played = WC.matches.filter(m => m.status !== "UP");
+    return played.length ? played[played.length - 1].date : (WC.matches[0] && WC.matches[0].date);
+  }
+
+  function renderPage() {
+    document.querySelector(".eyebrow").innerHTML = `Now playing · ${WC.meta.name}`;
+
+    const meta = [
+      [WC.meta.teams, "Teams"], [WC.meta.matches, "Matches"],
+      ["16", "Host cities"], ["3", "Nations"]
+    ];
+    document.getElementById("heroMeta").innerHTML =
+      meta.map(([b, s]) => `<div class="m"><b>${b}</b><span>${s}</span></div>`).join("");
+
+    // hero: live games first, then next upcoming
+    const heroEl = document.getElementById("heroMatches");
+    heroEl.innerHTML = "";
+    const live = WC.matches.filter(m => m.status === "LIVE");
+    const upNext = WC.matches.filter(m => m.status === "UP").slice(0, 2);
+    [...live, ...upNext].slice(0, 3).forEach(m => heroEl.append(matchCard(m)));
+
+    // ticker: finished + live
+    const tk = document.getElementById("ticker");
+    tk.innerHTML = "";
+    WC.matches.filter(m => m.status !== "UP").forEach(m => {
+      tk.append(el(`<div class="tk">
+        ${m.status === "LIVE" ? '<span class="dotlive"></span>' : ""}
+        <span class="flag" style="font-size:15px;width:auto">${flag(m.hc)}</span>
+        <span class="ts">${m.hs}–${m.as}</span>
+        <span class="flag" style="font-size:15px;width:auto">${flag(m.ac)}</span>
+        <span style="color:var(--mute);font-size:11px">${m.status === "LIVE" ? m.minute : "FT"}</span>
+      </div>`));
+    });
+
+    // today = latest active date
+    const today = latestActiveDate();
+    document.querySelector("#todayHead").textContent = `Latest · ${today}`;
+    const todayEl = document.getElementById("today");
+    todayEl.innerHTML = "";
+    WC.matches.filter(m => m.date === today).forEach(m => todayEl.append(matchCard(m)));
+
+    // recent finished, excluding the latest date, newest first
+    const recentEl = document.getElementById("recent");
+    recentEl.innerHTML = "";
+    WC.matches.filter(m => m.status === "FT" && m.date !== today)
+      .slice(-6).reverse().forEach(m => recentEl.append(matchCard(m)));
+  }
+
+  // If live.js is loaded, fetch first then render. Otherwise render seed data.
+  async function start() {
+    if (typeof goLive === "function") {
+      await goLive();
+      // keep scores ticking during live games
+      setInterval(async () => { await goLive(); renderPage(); }, 60000);
+    }
+    renderPage();
+  }
+  start();
+</script>
+</body>
+</html>

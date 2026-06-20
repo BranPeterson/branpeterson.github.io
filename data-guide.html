@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>World Cup Hub — Go Live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/style.css" />
+<style>
+  .guide { max-width: 760px; }
+  .guide h2 { font-family:"Archivo",sans-serif; font-size:22px; margin:38px 0 12px; }
+  .guide h3 { font-size:16px; margin:24px 0 8px; }
+  .guide p { color:var(--mute); margin-bottom:12px; }
+  .guide p b, .guide li b { color:var(--chalk); }
+  .guide ul { color:var(--mute); margin:0 0 14px 20px; }
+  .guide li { margin-bottom:6px; }
+  .pick { color:var(--win); font-weight:700; }
+</style>
+</head>
+<body>
+<main class="wrap guide">
+  <div class="eyebrow">From static to live</div>
+  <h1 class="page">Wiring up live scores</h1>
+  <p class="lede">The site reads from one seed file, <b style="color:var(--chalk)">assets/data.js</b>. To make scores update on their own, you fetch from an API and pour the result into the same <b style="color:var(--chalk)">WC</b> object the pages already read. This build uses <b style="color:var(--chalk)">API-Football</b>, which works straight from the browser, so no server is needed on GitHub Pages.</p>
+
+  <div class="callout" style="margin-top:16px">
+    <b>Why API-Football and not football-data.org?</b> football-data.org blocks direct browser calls (CORS), so it needs a server in the middle. API-Football allows browser calls with the key in a request header, which is what makes a no-server GitHub Pages setup possible. The tradeoff is the key is visible in your code. For a free portfolio demo that is acceptable since it only reads public scores and is rate-limited to 100 calls a day. Step 5 covers hiding it if you want.
+  </div>
+
+  <h2>1 &middot; Get your free API key</h2>
+  <div class="steps">
+    <div class="step"><span class="n"></span><div><h4>Sign up</h4><p>Go to <a href="https://dashboard.api-football.com/register" target="_blank" rel="noopener">dashboard.api-football.com/register</a> and create a free account. No card needed.</p></div></div>
+    <div class="step"><span class="n"></span><div><h4>Confirm your email</h4><p>Click the link they send. The free plan gives you 100 requests per day with access to every endpoint.</p></div></div>
+    <div class="step"><span class="n"></span><div><h4>Copy your key</h4><p>On the dashboard, your key sits under <b>API Key</b> or <b>My Access</b>. It is a long string. You send it in a header called <b>x-apisports-key</b> on every request.</p></div></div>
+  </div>
+  <p style="margin-top:10px">Note: sign up through <b>dashboard.api-football.com</b> (the direct API-SPORTS account), not through RapidAPI. The direct account uses the simple <b>x-apisports-key</b> header this guide expects.</p>
+
+  <h2>2 &middot; Test the key (the right way)</h2>
+  <p>Do not open the page by double-clicking the file. That runs it from <b>file://</b> with no real origin, and the API rejects it. Instead, run a tiny local server first, then test in the console.</p>
+  <h3>Start a local server</h3>
+  <p>In a terminal, inside your project folder, run one of these. Then visit the address it prints (usually <b>http://localhost:8000</b>).</p>
+  <pre><span class="c"># if you have Python</span>
+python -m http.server 8000
+
+<span class="c"># or if you have Node</span>
+npx serve</pre>
+  <h3>Then test in the browser console</h3>
+  <p>With the page open on <b>localhost</b>, press F12, open Console, paste this, and swap in your key. Type the quotes by hand so they stay straight, not curly.</p>
+  <pre><span class="k">const</span> KEY = <span class="s">"PASTE_YOUR_KEY_HERE"</span>;
+<span class="f">fetch</span>(<span class="s">"https://v3.football.api-sports.io/fixtures?league=1&amp;season=2026"</span>, {
+  headers: { <span class="s">"x-apisports-key"</span>: KEY }
+})
+  .<span class="f">then</span>(r =&gt; r.<span class="f">json</span>())
+  .<span class="f">then</span>(d =&gt; {
+    console.<span class="f">log</span>(d.results, <span class="s">"fixtures loaded"</span>);
+    console.<span class="f">log</span>(d.response[<span class="s">0</span>]);
+  })
+  .<span class="f">catch</span>(e =&gt; console.<span class="f">error</span>(<span class="s">"Failed:"</span>, e));</pre>
+  <p>If it prints a fixture count, you are connected. If you see <b>errors</b> in the response with a token message, the key is wrong or missing. A 429 means you used up the daily 100.</p>
+
+  <h2>3 &middot; The file that does the work</h2>
+  <p>The site already ships with <b>assets/live.js</b>. It does three things: holds your key, fetches fixtures and standings, and translates API-Football's shape into the <b>WC</b> object the pages read. You do not need to write it. You only need to:</p>
+  <ul>
+    <li>Open <b>assets/live.js</b> and paste your key into the <b>API.key</b> line at the top.</li>
+    <li>Make sure each page loads it (next step).</li>
+  </ul>
+  <p>It already handles the two gotchas: API-Football returns team <b>names</b> not flag codes, so there is a lookup table inside that maps all 48 teams to the right flag. And it derives each match's group letter from the standings, since the fixtures feed does not include it directly.</p>
+
+  <h2>4 &middot; Switch each page from seed to live</h2>
+  <p>Right now every page ends with a block that renders immediately from seed data. To go live, add <b>live.js</b> after <b>app.js</b>, then wrap the render code so it runs after the fetch finishes. The pattern is the same on every page:</p>
+  <pre>&lt;script src=<span class="s">"assets/data.js"</span>&gt;&lt;/script&gt;
+&lt;script src=<span class="s">"assets/app.js"</span>&gt;&lt;/script&gt;
+&lt;script src=<span class="s">"assets/live.js"</span>&gt;&lt;/script&gt;
+&lt;script&gt;
+  <span class="f">mountNav</span>(<span class="s">"index.html"</span>);
+  <span class="f">mountFoot</span>();
+
+  <span class="k">async function</span> <span class="f">start</span>() {
+    <span class="k">await</span> <span class="f">goLive</span>();        <span class="c">// fills WC from the API (or keeps seed on failure)</span>
+    <span class="f">renderPage</span>();          <span class="c">// the page's existing render code, moved into here</span>
+  }
+  <span class="f">start</span>();
+&lt;/script&gt;</pre>
+  <p>So on the home page, for example, you take everything that currently runs after <b>mountFoot()</b>, wrap it in a <b>function renderPage()</b>, and call <b>start()</b>. Because <b>goLive()</b> falls back to seed data if the network fails, the site never shows up empty.</p>
+
+  <div class="callout" style="margin:18px 0">
+    <b>Watch your request budget.</b> The free tier is 100 calls a day. Each page load calls the API twice (fixtures plus standings). Browsing your own site a few dozen times in testing can eat that fast, so do most of your design work on the seed data and only flip to live when you want to see it move.
+  </div>
+
+  <h2>5 &middot; Hiding the key (optional)</h2>
+  <p>For a portfolio demo, a visible read-only key that is rate-limited is a normal tradeoff. If you want it hidden later, the standard fix is a free serverless proxy that holds the key and forwards the request:</p>
+  <ul>
+    <li><b>Cloudflare Workers</b> or <b>Vercel functions</b>, free tier. Store the key as an environment variable, fetch the API from there, and have your site call the worker instead.</li>
+    <li>Your <b>live.js</b> then points at <b>your-worker.workers.dev</b> with no key in the page.</li>
+  </ul>
+  <p>Start with the key in <b>live.js</b>, get the site moving, then add a proxy if you decide to.</p>
+
+  <h2>6 &middot; Auto-refresh during live games</h2>
+  <p>To make scores tick without a reload, re-run the fetch on a timer. Every 60 seconds keeps you well inside the daily limit during a match window:</p>
+  <pre><span class="k">setInterval</span>(<span class="k">async</span> () =&gt; {
+  <span class="k">await</span> <span class="f">goLive</span>();
+  <span class="f">renderPage</span>();
+}, <span class="s">60000</span>);   <span class="c">// 60 seconds</span></pre>
+
+  <div class="callout" style="margin:24px 0">
+    <b>The whole swap in one breath:</b> sign up, paste your key into <b>live.js</b>, add the <b>live.js</b> script tag to each page, wrap each page's render code in <b>renderPage()</b> and call it after <b>goLive()</b>. Players and formations stay hand-curated in <b>data.js</b>, since the free tier does not carry Football Manager style attribute ratings. That editorial layer is what makes the site yours.
+  </div>
+
+  <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+    <a class="btn primary" href="https://dashboard.api-football.com/register" target="_blank" rel="noopener">Get a free key &#8599;</a>
+    <a class="btn" href="https://www.api-football.com/documentation-v3" target="_blank" rel="noopener">API docs &#8599;</a>
+    <a class="btn" href="index.html">Back to live page</a>
+  </div>
+</main>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/live.js"></script> 
+<script>
+  mountNav("data-guide.html");
+  mountFoot();
+</script>
+</body>
+</html>

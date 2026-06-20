@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>World Cup Hub — Players</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<main class="wrap">
+  <div class="eyebrow">Scouting database</div>
+  <h1 class="page">Player profiles</h1>
+  <p class="lede">Football Manager style breakdowns: attributes on the 1 to 20 scale, current form, tournament output and a scout's note on how each player fits the plan.</p>
+
+  <div style="margin:22px 0 10px;max-width:360px">
+    <input id="search" placeholder="Search players or teams…"
+      style="width:100%;background:var(--panel);border:1px solid var(--line);color:var(--chalk);padding:11px 14px;border-radius:9px;font-size:14px;font-family:inherit" />
+  </div>
+
+  <div class="grid cols-2" id="players" style="margin-top:18px"></div>
+  <p id="empty" style="display:none;color:var(--mute);text-align:center;padding:40px 0">No players found.</p>
+
+  <div class="callout" style="margin-top:30px">
+    This is a curated sample squad. Add more players by extending the <b>players</b> array in <b>assets/data.js</b>, or pull full squads from an API — see the <a href="data-guide.html" style="color:var(--accent)">Go Live</a> guide.
+  </div>
+</main>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script>
+  mountNav("players.html");
+  mountFoot();
+
+  const wrap = document.getElementById("players");
+  function draw(q = "") {
+    wrap.innerHTML = "";
+    const rows = WC.players.filter(p =>
+      (p.name + " " + p.team + " " + p.role).toLowerCase().includes(q.toLowerCase()));
+    rows.forEach(p => wrap.append(playerCard(p)));
+    document.getElementById("empty").style.display = rows.length ? "none" : "block";
+  }
+  draw();
+  document.getElementById("search").addEventListener("input", e => draw(e.target.value));
+</script>
+</body>
+</html>

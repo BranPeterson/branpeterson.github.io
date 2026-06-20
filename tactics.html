@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>World Cup Hub — Tactics</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="assets/style.css" />
+</head>
+<body>
+<main class="wrap">
+  <div class="eyebrow">Tactical board</div>
+  <h1 class="page">Managers & formations</h1>
+  <p class="lede">How the contenders line up. Each board shows the shape, the manager, the starting eleven and the plan behind it.</p>
+
+  <div class="grid cols-2" id="boards" style="margin-top:26px"></div>
+
+  <div class="callout" style="margin-top:30px">
+    Formations are positioned by pitch coordinates in <b>assets/data.js</b> — edit the <b>spots</b> array to move players or add new teams. The keeper sits at the bottom; the team attacks upward.
+  </div>
+</main>
+
+<script src="assets/data.js"></script>
+<script src="assets/app.js"></script>
+<script src="assets/live.js"></script> 
+<script>
+  mountNav("tactics.html");
+  mountFoot();
+  const wrap = document.getElementById("boards");
+  WC.formations.forEach(f => wrap.append(pitchBoard(f)));
+</script>
+</body>
+</html>
