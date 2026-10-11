@@ -1,113 +1,182 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>World Cup Hub — Live</title>
-<link rel="preconnect" href="https://fonts.googleapis.com" />
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-<link rel="stylesheet" href="assets/style.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Bran Peterson | Illustrator, Animator, Art Teacher</title>
+<meta name="description" content="Bran Peterson: illustration, animation and art teaching portfolio. Commissions and workshops open.">
+<meta property="og:title" content="Bran Peterson">
+<meta property="og:description" content="Illustrator, animator and art teacher.">
+<meta property="og:image" content="images/doodles/signature.png">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%23C26A2B'/%3E%3Crect x='3' y='3' width='26' height='26' rx='3' fill='%23F6F6F2'/%3E%3Cpath d='M8 21c3-9 6-11 7-8s-4 8 0 7 5-7 9-6' stroke='%231E1F24' stroke-width='2.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Patrick+Hand&family=Permanent+Marker&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-<main class="wrap">
-  <section class="hero">
-    <div>
-      <div class="eyebrow">Now playing</div>
-      <h1 class="page" id="heroTitle">The tournament, tracked live.</h1>
-      <p class="lede">Every group, every goal, every formation. Live scores, deep player profiles in a Football Manager style, tactical boards and links straight to the highlights.</p>
-      <div class="hero-meta" id="heroMeta"></div>
-      <div style="display:flex;gap:10px;margin-top:24px;flex-wrap:wrap">
-        <a class="btn primary" href="schedule.html">View full schedule</a>
-        <a class="btn" href="players.html">Player profiles</a>
-      </div>
+<a class="skip" href="#board">Skip to content</a>
+
+<!-- wood frame around the whole site -->
+<div class="frame" aria-hidden="true"><i class="t"></i><i class="b"></i><i class="l"></i><i class="r"></i><span class="lip"></span></div>
+
+<button id="drawmore" class="postit" type="button" aria-pressed="false" title="Draw on the board">
+  <span class="mag"></span><span id="dmtxt">Draw<br>more!</span>
+</button>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<main id="board" tabindex="-1">
+
+  <!-- ============ HOME ============ -->
+  <section class="view" id="v-home" aria-label="Home">
+    <div class="hero" id="hero">
+      <h1 class="sig" id="sig">
+        <span class="visually-hidden">Bran Peterson</span>
+        <svg id="sigsvg" aria-hidden="true"></svg>
+      </h1>
+      <p class="tag" id="tag"></p>
+
+      <a class="cluster" id="c-about" href="#about" data-go="about">
+        <span class="lab">About Me</span>
+        <span class="doodle"><img src="images/doodles/head.png" alt="" width="243" height="328">
+          <svg class="wink" viewBox="0 0 30 14" aria-hidden="true"><path d="M2 10 Q15 0 28 10"/></svg>
+          <span class="hello">hi, I'm Bran!</span></span>
+      </a>
+      <a class="cluster" id="c-ill" href="#illustrations" data-go="illustrations">
+        <span class="lab">Illustrations</span>
+        <span class="doodle"><img src="images/doodles/horse.png" alt="" width="474" height="451">
+          <svg class="dust" viewBox="0 0 60 30" aria-hidden="true"><path d="M50 8 L10 8 M56 18 L4 18 M46 27 L20 27"/></svg></span>
+      </a>
+      <a class="cluster" id="c-anim" href="#animations" data-go="animations">
+        <span class="lab">Animations</span>
+        <span class="doodle"><img src="images/doodles/camera.png" alt="" width="207" height="338">
+          <span class="reel r1"></span><span class="reel r2"></span><span class="cone"></span></span>
+      </a>
+      <a class="cluster" id="c-teach" href="#teaching" data-go="teaching">
+        <span class="lab">Art Teaching<br>Portfolio</span>
+        <span class="doodle"><img src="images/doodles/basket.png" alt="" width="423" height="405">
+          <svg class="apple" viewBox="0 0 44 48" aria-hidden="true"><circle cx="22" cy="27" r="17"/><path class="stem" d="M22 10 Q24 3 31 2"/></svg></span>
+      </a>
+      <a class="cluster" id="c-contact" href="#contact" data-go="contact">
+        <span class="lab">Contact /<br>Commissions</span>
+        <span class="doodle"><img src="images/doodles/mailhand.png" alt="" width="246" height="270">
+          <svg class="env" viewBox="0 0 60 42" aria-hidden="true"><rect x="3" y="3" width="54" height="36" rx="3"/><path d="M4 5 L30 24 L56 5"/></svg></span>
+      </a>
+      <div class="scrollhint" id="scrollhint" aria-hidden="true"><span>scroll<br>&darr;</span></div>
     </div>
-    <div class="hero-art">
-      <div class="panel" style="padding:18px">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><span class="dotlive" style="width:8px;height:8px;border-radius:50%;background:var(--accent)"></span><span style="font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--mute);font-weight:700">Live & next</span></div>
-        <div id="heroMatches" class="grid"></div>
-      </div>
-    </div>
+    <div id="previews"></div>
   </section>
 
-  <div class="section-head" style="margin-top:30px"><h2>Score ticker</h2><span class="hint">Scroll →</span></div>
-  <div class="ticker" id="ticker"></div>
+  <!-- ============ ILLUSTRATIONS ============ -->
+  <section class="view" id="v-illustrations" hidden aria-labelledby="t-ill">
+    <div class="shead"></div>
+    <header class="stitle c-ink"><h2 class="mh" id="t-ill">Illustrations</h2><span class="squig"></span><p class="sub" data-text="illustrations.intro"></p>
+      <div class="chips" id="chips" role="toolbar" aria-label="Filter illustrations"></div></header>
+    <div class="masonry" id="gallery"></div>
+  </section>
 
-  <div class="section-head"><h2 id="todayHead">Latest</h2><span class="hint">All times ET</span></div>
-  <div class="grid cols-3" id="today"></div>
+  <!-- ============ ANIMATIONS ============ -->
+  <section class="view" id="v-animations" hidden aria-labelledby="t-anim">
+    <div class="shead"></div>
+    <header class="stitle c-green"><h2 class="mh" id="t-anim">Animations</h2><span class="squig"></span><p class="sub" data-text="animations.intro"></p></header>
+    <div class="screenwrap">
+      <div><div class="screen" id="reel"></div><p class="reelcap" id="reelcap"></p></div>
+      <div class="reelside"><div class="postit big" id="animnote"><span class="mag"></span></div>
+        <p class="hs c-green sidehand">loops, GIFs,<br>title cards</p></div>
+    </div>
+    <div class="h2 c-green"><h3 class="mh">Shorts &amp; loops</h3><span class="squig"></span></div>
+    <div class="strip" id="strip"></div>
+    <div class="h2 c-green"><h3 class="mh">How a shot gets made</h3><span class="squig"></span></div>
+    <div class="process" id="process"></div>
+  </section>
 
-  <div class="section-head"><h2>Latest results</h2><a class="hint" href="schedule.html" style="color:var(--accent)">All 104 matches ↗</a></div>
-  <div class="grid cols-3" id="recent"></div>
+  <!-- ============ ART TEACHING ============ -->
+  <section class="view" id="v-teaching" hidden aria-labelledby="t-teach">
+    <div class="shead"></div>
+    <header class="stitle c-magenta"><h2 class="mh" id="t-teach">Art Teaching</h2><span class="squig"></span><p class="sub" data-text="teaching.intro"></p></header>
+
+    <div class="teachtop">
+      <div><h3 class="mh h-sm">What I teach</h3><ul class="checks" id="checks"></ul></div>
+      <div class="basketcol"><img src="images/doodles/basket.png" alt="" class="basketimg"><div class="postit pink" id="tip"><span class="mag"></span></div></div>
+      <div class="bigcircle" id="taught"></div>
+    </div>
+
+    <!-- Teaching philosophy -->
+    <div class="h2 c-magenta"><h3 class="mh">Teaching philosophy</h3><span class="squig"></span></div>
+    <div class="philosophy">
+      <figure class="bubble" id="quote"></figure>
+      <ol class="principles" id="principles"></ol>
+    </div>
+
+    <!-- Classroom photos -->
+    <div class="h2 c-magenta h2-row"><div><h3 class="mh">In the classroom</h3><span class="squig"></span></div>
+      <span class="postit blue small tilt-r">photos shared<br>with permission</span></div>
+    <div class="clothesline" id="classroom"></div>
+
+    <div class="h2 c-magenta"><h3 class="mh">Lesson plans</h3><span class="squig"></span></div>
+    <div class="lessons" id="lessons"></div>
+
+    <div class="h2 c-magenta"><h3 class="mh">Student work</h3><span class="squig"></span></div>
+    <div class="wall" id="wall"></div>
+    <p class="center"><a class="see c-magenta" href="#contact" data-go="contact">book a workshop</a></p>
+  </section>
+
+  <!-- ============ ABOUT ============ -->
+  <section class="view" id="v-about" hidden aria-labelledby="t-about">
+    <div class="shead"></div>
+    <header class="stitle c-blue"><h2 class="mh" id="t-about">About Me</h2><span class="squig"></span></header>
+    <div class="aboutgrid">
+      <div class="polaroid"><span class="mag" style="--c:var(--blue)"></span><div class="ph" id="aboutphoto"></div><span class="cap">me, probably drawing</span></div>
+      <div><div class="bio" id="bio"></div>
+        <h3 class="mh h-sm">Tools I use</h3><div class="tools" id="tools"></div></div>
+    </div>
+    <div class="h2"><h3 class="mh">So far</h3></div>
+    <div class="timeline" id="timeline"></div>
+  </section>
+
+  <!-- ============ CONTACT ============ -->
+  <section class="view" id="v-contact" hidden aria-labelledby="t-contact">
+    <div class="shead"></div>
+    <header class="stitle c-red"><h2 class="mh" id="t-contact">Let's make something</h2><span class="squig"></span><p class="sub" data-text="contact.intro"></p></header>
+    <div class="contactgrid">
+      <div>
+        <div class="menu"><span class="mag"></span><span class="mag m2"></span><h3>Commission menu</h3><div id="menu"></div></div>
+        <div class="oval" id="reach"></div>
+      </div>
+      <form id="form" novalidate>
+        <div class="two">
+          <div class="f"><label for="fn">Your name</label><input id="fn" name="name" type="text" autocomplete="name" required></div>
+          <div class="f"><label for="fe">Email</label><input id="fe" name="email" type="email" autocomplete="email" required></div>
+        </div>
+        <fieldset class="f"><legend>What are we making?</legend><div class="opts" id="opts"></div></fieldset>
+        <div class="f"><label for="fm">Tell me about it</label><textarea id="fm" name="message" required placeholder="What you have in mind, rough timeline, where it'll be used..."></textarea></div>
+        <input type="text" name="_gotcha" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+        <div class="sendrow" id="sendrow">
+          <button class="send" id="send" type="submit">Send</button>
+          <img class="hand" src="images/doodles/mailhand.png" alt="">
+          <svg class="env2" viewBox="0 0 60 42" aria-hidden="true"><rect x="3" y="3" width="54" height="36" rx="3"/><path d="M4 5 L30 24 L56 5"/></svg>
+          <span class="formmsg" id="formmsg" role="status" aria-live="polite"></span>
+        </div>
+      </form>
+    </div>
+  </section>
 </main>
 
-<script src="assets/data.js"></script>
-<script src="assets/app.js"></script>
+<canvas id="ink" aria-hidden="true"></canvas>
 
-<script src="assets/live.js"></script> 
-<script>
-  mountNav("index.html");
-  mountFoot();
+<div class="lb" id="lb" role="dialog" aria-modal="true" aria-label="Enlarged image" hidden>
+  <button class="nav" id="lbprev" type="button" aria-label="Previous">&larr; prev</button>
+  <div class="sheet lbsheet"><span class="mag"></span><span class="mag m2" style="--c:var(--blue)"></span><div id="lbart"></div></div>
+  <div class="lbpost" id="lbinfo"></div>
+  <button class="nav" id="lbnext" type="button" aria-label="Next">next &rarr;</button>
+  <button class="nav x" id="lbx" type="button">esc to close &times;</button>
+</div>
 
-  // pick the most recent date that has any finished or live match
-  function latestActiveDate() {
-    const played = WC.matches.filter(m => m.status !== "UP");
-    return played.length ? played[played.length - 1].date : (WC.matches[0] && WC.matches[0].date);
-  }
+<div id="wipe" aria-hidden="true"><div class="cover"></div><div class="eraser"></div></div>
+<nav id="tray" aria-label="Sections"></nav>
 
-  function renderPage() {
-    document.querySelector(".eyebrow").innerHTML = `Now playing · ${WC.meta.name}`;
-
-    const meta = [
-      [WC.meta.teams, "Teams"], [WC.meta.matches, "Matches"],
-      ["16", "Host cities"], ["3", "Nations"]
-    ];
-    document.getElementById("heroMeta").innerHTML =
-      meta.map(([b, s]) => `<div class="m"><b>${b}</b><span>${s}</span></div>`).join("");
-
-    // hero: live games first, then next upcoming
-    const heroEl = document.getElementById("heroMatches");
-    heroEl.innerHTML = "";
-    const live = WC.matches.filter(m => m.status === "LIVE");
-    const upNext = WC.matches.filter(m => m.status === "UP").slice(0, 2);
-    [...live, ...upNext].slice(0, 3).forEach(m => heroEl.append(matchCard(m)));
-
-    // ticker: finished + live
-    const tk = document.getElementById("ticker");
-    tk.innerHTML = "";
-    WC.matches.filter(m => m.status !== "UP").forEach(m => {
-      tk.append(el(`<div class="tk">
-        ${m.status === "LIVE" ? '<span class="dotlive"></span>' : ""}
-        <span class="flag" style="font-size:15px;width:auto">${flag(m.hc)}</span>
-        <span class="ts">${m.hs}–${m.as}</span>
-        <span class="flag" style="font-size:15px;width:auto">${flag(m.ac)}</span>
-        <span style="color:var(--mute);font-size:11px">${m.status === "LIVE" ? m.minute : "FT"}</span>
-      </div>`));
-    });
-
-    // today = latest active date
-    const today = latestActiveDate();
-    document.querySelector("#todayHead").textContent = `Latest · ${today}`;
-    const todayEl = document.getElementById("today");
-    todayEl.innerHTML = "";
-    WC.matches.filter(m => m.date === today).forEach(m => todayEl.append(matchCard(m)));
-
-    // recent finished, excluding the latest date, newest first
-    const recentEl = document.getElementById("recent");
-    recentEl.innerHTML = "";
-    WC.matches.filter(m => m.status === "FT" && m.date !== today)
-      .slice(-6).reverse().forEach(m => recentEl.append(matchCard(m)));
-  }
-
-  // If live.js is loaded, fetch first then render. Otherwise render seed data.
-  async function start() {
-    if (typeof goLive === "function") {
-      await goLive();
-      // keep scores ticking during live games
-      setInterval(async () => { await goLive(); renderPage(); }, 60000);
-    }
-    renderPage();
-  }
-  start();
-</script>
+<script src="js/content.js"></script>
+<script src="js/signature.js"></script>
+<script src="js/main.js"></script>
 </body>
 </html>

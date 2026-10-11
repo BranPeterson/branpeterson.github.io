@@ -1,73 +1,79 @@
-# World Cup Hub
+# Bran Peterson portfolio website
 
-A multi page site that tracks the FIFA World Cup 2026: live scores, full schedule,
-group standings, Football Manager style player profiles, tactical formation boards,
-and links to match highlights.
+A whiteboard themed portfolio. Bran's signature writes itself when the site opens, each doodle on the board is a link with its own little animation, the marker tray at the bottom is the menu, and the eraser wipes between pages.
 
-Built as a Kyonic Designs project. No build step, no framework, no dependencies.
-Just open `index.html` (or serve it locally, see below).
+Plain HTML, CSS and JavaScript. No build step, no installs.
 
-## Pages
+## Open it
 
-| File | What it does |
-|------|--------------|
-| `index.html` | Live page: hero, score ticker, latest games, recent results |
-| `schedule.html` | All matches, filterable by group and status |
-| `standings.html` | All 12 group tables, auto sorted |
-| `players.html` | FM style player profiles with attribute bars and search |
-| `tactics.html` | Formation boards on a tactical pitch |
-| `data-guide.html` | Step by step guide to wiring in live data |
+Double click `index.html`. It runs straight from the folder.
 
-## How it works
+## Folder map
 
-Everything reads from one file: `assets/data.js`. That file holds a single `WC`
-object with `matches`, `groups`, `players` and `formations`. The pages never
-hard code data, they render from `WC`. To update scores by hand, edit `data.js`.
+```
+index.html          page structure (rarely needs edits)
+css/style.css       the look
+js/content.js       ALL the words, pieces, photos and prices  <- edit this one
+js/main.js          behaviour (intro, wipes, lightbox, draw mode, form)
+js/signature.js     Bran's signature traced into pen strokes (don't edit)
+images/doodles/     Bran's home page doodles + signature
+images/illustrations/        put illustration images here
+images/animations/           .mp4 files and poster images
+images/teaching/classroom/   classroom photos
+images/teaching/student-work/
+images/teaching/lessons/     lesson plan PDFs
+images/about/                Bran's photo
+```
 
-## Going live with real scores
+## Adding work (the only thing Bran needs to know)
 
-`assets/live.js` is already included. It fetches from API-Football and pours the
-result into the same `WC` object, so the pages do not change. To turn it on:
+1. Put the image in the right folder, for example `images/illustrations/rider-study.jpg`.
+2. Open `js/content.js` in any text editor (Notepad works, VS Code is nicer).
+3. Find the section, copy one `{ ... }` line, paste it where you want it, and fill it in:
 
-1. Get a free key at https://dashboard.api-football.com/register (100 calls/day).
-2. Paste your key into the `API.key` line at the top of `assets/live.js`.
-3. On each page, uncomment the `<script src="assets/live.js"></script>` line.
-   The home page is already set up to use it (see the `start()` function): it
-   calls `goLive()` first, then renders, and refreshes every 60 seconds during
-   live games. If the fetch fails, it falls back to the seed data automatically.
+```js
+{ title: "Rider study", image: "images/illustrations/rider-study.jpg", tags: ["Animals"], year: "2025", medium: "ink", note: "Quick study from life." },
+```
 
-The full walkthrough, including why API-Football works without a server and how
-to hide the key later, is on the `data-guide.html` page.
+4. Save and refresh.
 
-### Important: do not open with file://
+Rules of thumb:
 
-API-Football rejects requests from `file://`. To test live data, serve the folder:
+- An empty `image: ""` shows a placeholder sheet, so unfinished sections still look intentional.
+- The first three items in Illustrations, Animations clips and Classroom photos also show on the home page.
+- Tags on illustrations turn into the filter post-its automatically.
+- Export images as JPG, max about 2000px wide, under 1 MB each.
+- Videos can be an `.mp4` in `images/animations/` or a YouTube / Vimeo link.
+- Lines marked `// PLACEHOLDER` in content.js are sample copy for Bran to replace. That includes the teaching philosophy quote and principles, the bio, tools, timeline, student count and prices.
 
-    python -m http.server 8000      # then visit http://localhost:8000
-    # or
-    npx serve
+## Contact form
 
-On GitHub Pages this is a non issue, since Pages serves over https.
+Right now the Send button opens the visitor's email app with their message filled in, addressed to Branparts@gmail.com.
 
-## Hosting on GitHub Pages
+To have messages arrive without the visitor's email app:
 
-1. Make a new repo, e.g. `world-cup-hub`.
-2. Drop these files in the root (keep the `assets` folder).
-3. Push, then go to Settings, Pages, and set the source to your main branch root.
-4. Your site goes live at `yourname.github.io/world-cup-hub/`.
+1. Make a free form at https://formspree.io with Bran's email.
+2. Copy the form URL (looks like `https://formspree.io/f/abcdwxyz`).
+3. Paste it into `formEndpoint: ""` at the top of `js/content.js`.
 
-## Updating the seed data by hand
+## Putting it online (GitHub Pages, free)
 
-Edit `assets/data.js`:
+1. Create a new public repo on GitHub, e.g. `bran-portfolio`.
+2. Upload everything in this folder (keep the folder structure).
+3. Repo Settings > Pages > Source: `main` branch, `/ (root)`. Save.
+4. The site goes live at `https://<username>.github.io/bran-portfolio/` in a minute or two.
 
-- **Scores:** find the match in `matches`, set `hs` / `as`, change `status` to
-  `"FT"`, add a `hl` highlight link.
-- **Standings:** edit the group rows in `groups`. Tables sort themselves.
-- **Players:** add objects to `players`. Attributes are on the 1 to 20 scale.
-- **Formations:** add to `formations`. `spots` use pitch percentages, keeper at
-  the bottom, team attacks upward.
+A custom domain (like branpeterson.com) can be added in the same Pages settings.
 
-Players and formations stay hand curated even when live, since the free API tier
-does not include attribute level scouting data.
+## Features at a glance
 
-Data seeded June 17, 2026. Not affiliated with FIFA.
+- Signature write-on intro (about 3s, plays once per visit, click or press Esc to skip, skipped for people who turn off motion)
+- Doodle hover bits: head turns and winks, horse gallops off, camera bot spins its reels, apple rolls out of the basket, hand taps the mail
+- Eraser wipe page transitions, marker tray nav with the active marker uncapped
+- "Draw more!" post-it lets visitors draw on the board with the tray markers; the eraser wipes it
+- Illustrations: filterable pinned wall plus lightbox (arrow keys and Esc work)
+- Animations: showreel screen, film strip of clips that play in the screen, process strip
+- Art Teaching: what I teach, **teaching philosophy**, **classroom photos on a clothesline**, lesson plans with PDF links, student work wall
+- About and Contact / Commissions with a price menu
+- Works on phones: doodles stack in a grid, marker caps become the bottom bar
+- Section links work directly: `index.html#teaching`, `#illustrations`, etc.
