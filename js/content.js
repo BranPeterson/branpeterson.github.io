@@ -90,7 +90,13 @@ window.SITE = {
     website: { label: ["Visit the", "Mind of Their Own", "website"], url: "https://mindoftheirown.netlify.app" },
     /* The animatic gets its own section under the trailer */
     animatic: { title: "Mind of Their Own: animatic", video: "images/animations/moto-animatic.mp4", poster: "images/animations/moto-animatic-poster.jpg", length: "1:18",
-                note: "Where it started: the short timed out in rough boards, before any final animation." },
+                note: "The short timed out in rough boards, before any final animation." },
+    /* Storyboard pages: they scroll sideways in a film strip under the animatic.
+       Add more pages by adding lines here (top = first page). */
+    storyboards: {
+      note: "Where it all started: every shot drawn out panel by panel. Scroll through the pages, or open one to see it bigger.",
+      pages: [1, 2, 3, 4].map(n => ({ image: `images/animations/storyboards/moto-storyboard-${n}.jpg`, thumb: `images/animations/storyboards/moto-storyboard-${n}-sm.jpg` }))
+    },
     sidenote: { lines: ["the posters for it", "are in Illustrations"], link: "illustrations" },
     /* Shorts & loops strip. Hidden until at least one clip has a video. */
     clips: [

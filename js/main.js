@@ -130,6 +130,7 @@ function buildAnimations() {
     ? `<a href="#${esc(A.sidenote.link)}" data-go="${esc(A.sidenote.link)}">${A.sidenote.lines.map(esc).join('<br>')} &rarr;</a>`
     : A.sidenote.lines.map(esc).join('<br>');
   // sections with nothing in them yet stay hidden so the live site never looks unfinished
+  buildBoards();
   $('#clipsblock').hidden = !A.clips.some(c => c.video || c.poster);
   $('#processblock').hidden = !A.process.some(p => p.image);
   $('#strip').innerHTML = A.clips.map((c, i) =>
@@ -144,6 +145,30 @@ function buildAnimations() {
   const arrow = '<svg class="arr" viewBox="0 0 60 40" aria-hidden="true"><path d="M6 24 Q30 8 52 20 M42 12 L53 20 L42 28"/></svg>';
   $('#process').innerHTML = A.process.map((p, i) =>
     `<div><span class="sheet" style="transform:rotate(${[-1.5, 1, -.5][i % 3]}deg)"><span class="mag" style="--c:${PINS[i + 1]}"></span>${art(p, '', p.label)}</span><span class="cap">${i + 1}&nbsp; ${esc(p.label)}</span></div>`).join(arrow);
+}
+
+/* storyboard pages scroll sideways like a film strip */
+function buildBoards() {
+  const B = S.animations.storyboards, pages = (B && B.pages || []).filter(p => p.image);
+  $('#boardsblock').hidden = !pages.length;
+  if (!pages.length) return;
+  $('#boardsnote').textContent = B.note || '';
+  const track = $('#boardtrack');
+  track.innerHTML = pages.map((p, i) =>
+    `<button class="boardpage" type="button" data-lb="boards" data-i="${i}" aria-label="Open storyboard page ${i + 1} of ${pages.length}">${art(p, '', 'storyboard page')}</button>`).join('');
+  const cur = () => Math.min(pages.length - 1, Math.round(track.scrollLeft / (track.clientWidth || 1)));
+  const go = i => track.scrollTo({ left: Math.max(0, Math.min(pages.length - 1, i)) * track.clientWidth, behavior: reduce ? 'auto' : 'smooth' });
+  const update = () => {
+    const i = cur();
+    $('#boardcount').innerHTML = `page ${i + 1} of ${pages.length} <span aria-hidden="true">${pages.map((_, k) => k === i ? '&#9679;' : '&#9675;').join(' ')}</span>`;
+    $('#bprev').disabled = i === 0; $('#bnext').disabled = i === pages.length - 1;
+  };
+  $('#bprev').onclick = () => go(cur() - 1);
+  $('#bnext').onclick = () => go(cur() + 1);
+  track.addEventListener('keydown', e => { if (e.key === 'ArrowRight') { e.preventDefault(); go(cur() + 1); } if (e.key === 'ArrowLeft') { e.preventDefault(); go(cur() - 1); } });
+  let t; track.addEventListener('scroll', () => { clearTimeout(t); t = setTimeout(update, 60); }, { passive: true });
+  addEventListener('resize', update);
+  update();
 }
 
 /* ---------- teaching ---------- */
@@ -337,6 +362,7 @@ const LB = {
     process: hasProcess(p) ? p.process.filter(x => x.image) : [], final: p.image, hidden: $(`#gallery .item:nth-child(${i + 1})`)?.hidden })),
   class: () => S.teaching.classroom.map(c => ({ html: art(c, 'square', 'classroom photo', CAMERA, true), title: c.caption, meta: ['In the classroom'] })),
   student: () => S.teaching.studentWork.map(w => ({ html: art(w, 'square', 'student work', PENCIL, true), title: w.caption, meta: ['Student work'] })),
+  boards: () => { const P = S.animations.storyboards.pages; return P.map((x, i) => ({ html: art(x, '', 'storyboard page', PENCIL, true), title: 'Mind of Their Own storyboards', meta: [`Page ${i + 1} of ${P.length}`] })); },
   proj: p => S.teaching.projects[p].images.map(x => ({ html: art(x, 'square', 'project photo', CAMERA, true), title: x.caption || S.teaching.projects[p].title,
     meta: [S.teaching.projects[p].title, S.teaching.projects[p].grade].filter(Boolean) })),
 };
